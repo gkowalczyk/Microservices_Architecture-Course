@@ -108,4 +108,18 @@ You may consider one or more of the following methods:
 
 ---
 
+## 🔗 Project Repository
+
+You can find the full implementation of the homework assignment (Spring Cloud – Dynamic Configuration Refresh) in the following repository:
+
+👉 **[Spring Cloud Config Dynamic Refresh – GitHub Repository](https://github.com/gkowalczyk/Microservices_Architecture-Course/blob/main/m2/src/main/java/com/example/m2/Config.java)**
+
+The repository contains:
+- `Config Server` configured with Git integration,
+- `Eureka Server` for service discovery,
+- `m2` microservice using `@RefreshScope` and `ContextRefresher`,
+- Implementation of the **scheduler-based configuration refresh mechanism**,
+- Sample logs demonstrating automatic updates without restarting the service.
+
+
 
