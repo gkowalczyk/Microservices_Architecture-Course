@@ -1,0 +1,1 @@
+INSERT INTO contents(title, tag) VALUES ('AkademiaSpring.pl', 'spring');
