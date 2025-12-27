@@ -1,7 +1,7 @@
-package com.example.contentms;
+package com.example.recomendationms;
+
 
 import jakarta.persistence.*;
-
 
 @Entity
 @Table(name = "spring_cloud_db.contents")
