@@ -1,9 +1,13 @@
 package com.example.customerms;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "customers")
+@Getter
+@Setter
 public class Customer {
 
     @Id

@@ -11,5 +11,4 @@ public class ConfigServerCustomerOrderAppApplication {
     public static void main(String[] args) {
         SpringApplication.run(ConfigServerCustomerOrderAppApplication.class, args);
     }
-
 }
