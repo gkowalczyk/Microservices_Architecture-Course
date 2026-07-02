@@ -11,8 +11,11 @@ import java.util.Map;
 @Service
 public class RecommendationService {
 
-    @Autowired
-    private RestClient.Builder builder;
+    public RecommendationService(RestClient.Builder builder) {
+        this.builder = builder;
+    }
+
+    private final RestClient.Builder builder;
 
     public List<Map<String, String>> getRecommendationByTag(String tag) {
         return builder.build()
