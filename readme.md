@@ -339,12 +339,14 @@ separate responsibilities, separate databases, their own Flyway migrations,
 environment-specific configuration, and communication through Eureka with
 client-side load balancing.
 
+## 🧱 Module 5 — Synchronous Communication and Circuit Breaker
+
+
 ## 🔗 Project Repository
 
 The complete implementation of the module assignment is available in the course repository:
 
-## 🧱 Module 5 — Synchronous Communication and Circuit Breaker
-👉 **[Module 5 — Synchronous Communication and Circuit Breaker]()**
+👉 **[Module 5 — Synchronous Communication and Circuit Breaker](https://github.com/gkowalczyk/Microservices_Architecture-Course/tree/main/post-client-ms)**
 
 The project contains:
 
