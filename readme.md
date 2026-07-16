@@ -339,3 +339,38 @@ separate responsibilities, separate databases, their own Flyway migrations,
 environment-specific configuration, and communication through Eureka with
 client-side load balancing.
 
+## 🔗 Project Repository
+
+The complete implementation of the module assignment is available in the course repository:
+
+## 🧱 Module 5 — Synchronous Communication and Circuit Breaker
+👉 **[Module 5 — Synchronous Communication and Circuit Breaker]()**
+
+The project contains:
+
+- a synchronous declarative HTTP client,
+- integration with an external API,
+- Resilience4j Circuit Breaker,
+- fallback handling,
+- storage of the last successful response,
+- Spring Cache or Caffeine configuration,
+- unit tests,
+- integration tests,
+- logs demonstrating fallback behaviour when the external service is unavailable.
+
+---
+
+## 🔹 Summary
+
+Module 5 explains how microservices communicate synchronously using HTTP and how to make this communication more resilient.
+
+The key concepts are:
+
+- imperative clients explicitly build HTTP requests,
+- declarative clients describe remote APIs as Java interfaces,
+- unit tests verify isolated application logic,
+- integration tests verify HTTP communication,
+- Circuit Breaker prevents repeated calls to a failing service,
+- fallback methods provide alternative responses,
+- cache stores the last known successful response,
+- the client can continue returning useful data even when the remote service is temporarily unavailable.
