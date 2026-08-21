@@ -376,3 +376,81 @@ The key concepts are:
 - fallback methods provide alternative responses,
 - cache stores the last known successful response,
 - the client can continue returning useful data even when the remote service is temporarily unavailable.
+
+
+---
+
+## 📨 Module 6 — Asynchronous Communication with Apache Kafka
+
+### 🔹 Introduction
+
+This module presents an event-driven microservices architecture built with
+**Apache Kafka**. The application collects CPU and RAM metrics, processes them
+asynchronously, generates alerts, and exposes the results for visualization in
+**Grafana**.
+
+### 🔹 Module scope
+
+Topics covered in this module:
+
+- analysis of the project structure and its key components,
+- configuration of Apache Kafka and Kafdrop,
+- modelling microservices responsible for acquiring system metrics,
+- stream processing with a Kafka consumer,
+- designing a microservice that collects generated alerts,
+- event factory usage,
+- integration of Apache Kafka with Grafana,
+- visualization and monitoring of the data flow.
+
+### 🔹 Data flow
+
+1. `cpu-ram-metrics-collector-ms1` collects CPU and RAM usage data.
+2. The producer publishes system metrics to an Apache Kafka topic.
+3. The analyzer consumes the metrics and evaluates the configured thresholds.
+4. When a threshold is exceeded, the analyzer publishes an alert event.
+5. The alert collector consumes and stores the generated alerts.
+6. Kafdrop makes it possible to inspect Kafka topics and messages.
+7. Grafana presents the collected data in a monitoring dashboard.
+
+### 🔹 System architecture
+
+👉 [Open the full-size microservices architecture diagram](https://github.com/gkowalczyk/Microservices_Architecture-Course/blob/main/cpu-ram-metrics-collector-ms1/src/main/resources/monitoring-kafka-architecture.jpg)
+
+![Kafka-based system monitoring architecture](https://github.com/gkowalczyk/Microservices_Architecture-Course/raw/main/cpu-ram-metrics-collector-ms1/src/main/resources/monitoring-kafka-architecture.jpg)
+
+### 🔹 Grafana visualization
+
+👉 [Open the full-size Grafana dashboard](https://github.com/gkowalczyk/Microservices_Architecture-Course/blob/main/cpu-ram-metrics-collector-ms1/src/main/resources/grafana.png)
+
+![Grafana dashboard for system metrics and alerts](https://github.com/gkowalczyk/Microservices_Architecture-Course/raw/main/cpu-ram-metrics-collector-ms1/src/main/resources/grafana.png)
+
+### 🔗 Project repository
+
+The complete implementation is available in the course repository:
+
+👉 **[Module 6 — Kafka System Metrics Monitoring](https://github.com/gkowalczyk/Microservices_Architecture-Course/tree/main/cpu-ram-metrics-collector-ms1)**
+
+### 🔹 Summary
+
+Module 6 demonstrates how Apache Kafka enables asynchronous communication
+between independent microservices.
+
+The key concepts are:
+
+- producers publish system metrics as events,
+- consumers process messages independently,
+- Kafka topics separate metrics from alerts,
+- Kafdrop enables topic and message inspection,
+- alert events are generated when configured thresholds are exceeded,
+- Grafana provides visualization and operational monitoring.
+
+
+
+
+
+
+
+
+
+
+
