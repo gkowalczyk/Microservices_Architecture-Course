@@ -444,13 +444,80 @@ The key concepts are:
 - alert events are generated when configured thresholds are exceeded,
 - Grafana provides visualization and operational monitoring.
 
+---
 
+## 🐇 Alternative Implementation — Asynchronous Communication with RabbitMQ
 
+### 🔹 Introduction
 
+As an extension of the Kafka-based system, the same microservice workflow was
+implemented with **RabbitMQ** and **Spring AMQP**. This variant demonstrates how
+the messaging layer can be replaced without changing the core responsibilities
+of the microservices.
 
+The system collects CPU and RAM metrics, analyzes memory usage, generates alert
+events when configured thresholds are exceeded, and exposes the collected alerts
+through a REST endpoint for visualization in Grafana.
 
+### 🔹 RabbitMQ messaging model
 
+The implementation uses:
 
+- `DirectExchange` for routing messages,
+- durable queues for storing metrics and alerts,
+- routing keys for connecting exchanges with the appropriate queues,
+- `RabbitTemplate` for publishing Java objects as JSON,
+- `@RabbitListener` for asynchronous message consumption,
+- `JacksonJsonMessageConverter` for Java–JSON conversion.
 
+The messaging topology consists of:
 
+| Message | Exchange | Routing key | Queue |
+|---|---|---|---|
+| `SystemMetrics` | `metrics.exchange` | `system.metrics` | `system-metrics.queue` |
+| `RamAlert` | `alerts.exchange` | `ram.alert` | `alerts.queue` |
 
+### 🔹 Data flow
+
+1. `cpu-ram-metrics-collector-ms1-rabbitMQ` collects CPU and RAM metrics.
+2. The collector publishes `SystemMetrics` to `metrics.exchange`.
+3. RabbitMQ routes the message to `system-metrics.queue`.
+4. `data-aggregator-analyzer-rabbitmq` consumes and analyzes the metrics.
+5. When RAM usage exceeds a configured threshold, the analyzer creates a `RamAlert`.
+6. The analyzer publishes the alert to `alerts.exchange`.
+7. RabbitMQ routes the alert to `alerts.queue`.
+8. `alerts-dispatcher-rabbitMq` consumes the alert and exposes it through `GET /get-alerts`.
+9. Grafana retrieves the alerts from the REST endpoint and visualizes them.
+
+### 🔹 System architecture
+
+👉 [Open the full-size RabbitMQ architecture diagram](https://github.com/gkowalczyk/Microservices_Architecture-Course/blob/main/cpu-ram-metrics-collector-ms1-rabbitMQ/monitoring-rabbitmq-architecture.jpg)
+
+![RabbitMQ-based system monitoring architecture](https://github.com/gkowalczyk/Microservices_Architecture-Course/raw/main/cpu-ram-metrics-collector-ms1-rabbitMQ/monitoring-rabbitmq-architecture.jpg)
+
+### 🔗 RabbitMQ microservices
+
+- **[CPU/RAM Metrics Collector](https://github.com/gkowalczyk/Microservices_Architecture-Course/tree/main/cpu-ram-metrics-collector-ms1-rabbitMQ)** — collects system metrics and publishes `SystemMetrics`.
+- **[Data Aggregator Analyzer](https://github.com/gkowalczyk/Microservices_Architecture-Course/tree/main/data-aggregator-analyzer-rabbitmq)** — consumes metrics, analyzes RAM usage, and publishes `RamAlert`.
+- **[Alerts Dispatcher](https://github.com/gkowalczyk/Microservices_Architecture-Course/tree/main/alerts-dispatcher-rabbitMq)** — consumes alerts and exposes them through a REST API.
+
+### 🔹 Kafka and RabbitMQ variants
+
+Both implementations provide the same business flow but use different messaging
+models:
+
+- Kafka stores events in topics and tracks consumer progress with offsets.
+- RabbitMQ routes messages through exchanges to queues and removes them after
+  successful consumer acknowledgement.
+- The microservices remain loosely coupled in both variants.
+
+### 🔹 Summary
+
+The RabbitMQ implementation demonstrates:
+
+- replacing Kafka with another messaging broker,
+- exchange, queue, binding, and routing-key configuration,
+- asynchronous communication with Spring AMQP,
+- JSON serialization and deserialization,
+- automatic message acknowledgement after successful processing,
+- separation between metric collection, analysis, and alert presentation.
