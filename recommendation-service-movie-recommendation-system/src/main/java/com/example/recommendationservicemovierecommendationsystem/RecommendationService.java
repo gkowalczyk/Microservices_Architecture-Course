@@ -4,7 +4,6 @@ import io.micrometer.tracing.Span;
 import io.micrometer.tracing.Tracer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,6 +20,7 @@ public class RecommendationService {
             Double minimumRating,
             Integer limit
     ) {
+
         Span span = tracer.currentSpan();
         span.tag(
                 "recommendation.minimum_rating",
@@ -31,20 +31,17 @@ public class RecommendationService {
                 "recommendation.limit",
                 limit.toString()
 
-                );
+        );
+        span.event("recommendations-selected");
 
-             span.event("recommendations-selected");
-
-    return movieClient.findCandidates(
-            genre,
-            minimumRating
-    )
-            .stream()
-            .sorted(Comparator.comparing(MovieResponse::rating)
-                    .reversed())
-            .limit(limit)
-            .collect(Collectors.toList());
-
-
+        return movieClient.findCandidates(
+                        genre,
+                        minimumRating
+                )
+                .stream()
+                .sorted(Comparator.comparing(MovieResponse::rating)
+                        .reversed())
+                .limit(limit)
+                .collect(Collectors.toList());
     }
 }

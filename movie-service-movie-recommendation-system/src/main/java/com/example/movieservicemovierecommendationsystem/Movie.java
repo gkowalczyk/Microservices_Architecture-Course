@@ -17,8 +17,8 @@ public class Movie {
     private Long id;
     private String genre;
     private String title;
-    private  Integer releaseYear;
-    private  Double rating;
+    private Integer releaseYear;
+    private Double rating;
 
     public Movie(String genre, String title, Integer releaseYear, Double rating) {
         this.genre = genre;
