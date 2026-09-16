@@ -521,3 +521,147 @@ The RabbitMQ implementation demonstrates:
 - JSON serialization and deserialization,
 - automatic message acknowledgement after successful processing,
 - separation between metric collection, analysis, and alert presentation.
+
+## 🔎 Module 7 — Microservices Tracing and Monitoring with Zipkin
+
+
+### 🔹 Introduction
+
+This module introduces **distributed tracing** with **Micrometer Tracing** and
+**Zipkin**. Distributed tracing makes it possible to follow one request across
+multiple microservices, measure the duration of individual operations, identify
+bottlenecks, and determine in which service an error occurred.
+
+A complete request is represented by a **trace**, while every individual stage
+of its execution is represented by a **span**. All spans belonging to one
+request share the same `traceId`, while each span has its own `spanId`.
+
+### 🔹 Module scope
+
+Topics covered in this module:
+
+- the role of Zipkin in a distributed system,
+- traces, spans, parent-child relationships, and timing analysis,
+- propagation of tracing context between microservices,
+- B3 headers such as `X-B3-TraceId` and `X-B3-SpanId`,
+- automatic instrumentation provided by Spring Boot and Micrometer,
+- tracing synchronous HTTP calls made through Spring Cloud Gateway and
+  `RestClient`,
+- analysis of latency and errors in the Zipkin interface,
+- adding custom business tags and events to spans,
+- visualizing dependencies between services.
+
+## 🧠 Homework — Movie Recommendation System with Distributed Tracing
+
+### 🎯 Objective
+
+The goal of the assignment was to build a small microservice system and add
+end-to-end distributed tracing. A request entering through the API Gateway must
+retain the same trace context while passing through the recommendation service
+and the movie service.
+
+
+### 🔹 Request flow
+
+The client sends a request to the API Gateway:
+
+```http
+GET /api/recommendations?genre=SCI_FI&minimumRating=8.0&limit=3
+```
+
+The request is processed as follows:
+
+1. The API Gateway receives the request and matches the
+   `/api/recommendations/**` route.
+2. Eureka and Spring Cloud LoadBalancer resolve an available instance of the
+   recommendation service.
+3. The recommendation service calls the movie service using a load-balanced
+   `RestClient`.
+4. The movie service queries the H2 database and returns matching films.
+5. The recommendation service sorts the results by rating and applies the
+   requested limit.
+6. Micrometer propagates the B3 tracing context between services and reports
+   completed spans to Zipkin.
+
+### 🔹 Trace structure
+
+One successful request produces five related spans:
+
+| No. | Service | Span role | Description |
+|----:|---------|-----------|-------------|
+| 1 | API Gateway | `SERVER` | Receives the request from the client |
+| 2 | API Gateway | `CLIENT` | Forwards the request to the recommendation service |
+| 3 | Recommendation Service | `SERVER` | Handles `/api/recommendations` |
+| 4 | Recommendation Service | `CLIENT` | Calls the movie service through `RestClient` |
+| 5 | Movie Service | `SERVER` | Handles `/api/movies` and queries the database |
+
+All five spans share one `traceId`, which allows Zipkin to present the entire
+request as one timeline:
+
+```text
+API Gateway (SERVER)
+└── API Gateway (CLIENT)
+    └── Recommendation Service (SERVER)
+        └── Recommendation Service (CLIENT)
+            └── Movie Service (SERVER)
+```
+
+### 🔹 Custom tags and events
+
+The assignment adds business context to automatically generated spans.
+
+Recommendation service tags:
+
+```text
+recommendation.minimum_rating
+recommendation.limit
+recommendations-selected
+```
+
+Movie service tags:
+
+```text
+movie.query.genre
+movie.query.min.rating
+movie.result_count
+database.operation
+```
+
+These tags make it possible to connect technical performance data with the
+business parameters of a request, for example the selected genre, minimum
+rating, result count, and database operation.
+
+### 🔹 Zipkin trace visualization
+
+👉 [Open the full-size Zipkin trace](https://raw.githubusercontent.com/gkowalczyk/Microservices_Architecture-Course/refs/heads/main/api-gateway-movie-recommendation-system/src/main/resources/span.bmp)
+
+![Zipkin trace for the movie recommendation system](https://raw.githubusercontent.com/gkowalczyk/Microservices_Architecture-Course/refs/heads/main/api-gateway-movie-recommendation-system/src/main/resources/span1.bmp)
+
+The trace view presents three services and five related spans on one timeline.
+It can be used to compare server-side processing time with outgoing HTTP calls
+and locate the slowest part of the request.
+
+### 🔗 Project repositories
+
+- 👉 [Eureka Server](https://github.com/gkowalczyk/Microservices_Architecture-Course/tree/main/src/main/java/com/example/eurekaserver)
+- 👉 [API Gateway](https://github.com/gkowalczyk/Microservices_Architecture-Course/tree/main/api-gateway-movie-recommendation-system/src/main/java/com/example/apigatewaymovierecommendationsystem)
+- 👉 [Recommendation Service](https://github.com/gkowalczyk/Microservices_Architecture-Course/tree/main/recommendation-service-movie-recommendation-system/src/main/java/com/example/recommendationservicemovierecommendationsystem)
+- 👉 [Movie Service](https://github.com/gkowalczyk/Microservices_Architecture-Course/tree/main/movie-service-movie-recommendation-system/src/main/java/com/example/movieservicemovierecommendationsystem)
+
+### 🔹 Summary
+
+Module 7 demonstrates how distributed tracing provides visibility into a request
+that crosses several independently running applications.
+
+The key concepts are:
+
+- one trace represents the complete request,
+- spans represent individual operations performed by services and HTTP clients,
+- B3 headers propagate the trace context between applications,
+- Spring Cloud Gateway creates server and client spans automatically,
+- an observed `RestClient` continues the existing trace when calling another
+  microservice,
+- custom tags add business context to technical telemetry,
+- Zipkin visualizes timings, service dependencies, errors, and bottlenecks.
+
+
