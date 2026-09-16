@@ -1,4 +1,4 @@
-package com.example.alertsdispatcher;
+package com.example.alertsdispatcherrabbitmq;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -10,8 +10,7 @@ import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.listener.DefaultErrorHandler;
 import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer;
-import org.springframework.kafka.support.serializer.JsonDeserializer;
-
+import org.springframework.kafka.support.serializer.JacksonJsonDeserializer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,8 +35,8 @@ public class KafkaConfig {
                 "earliest"
         );
 
-        JsonDeserializer<RamAlert> jsonDeserializer =
-                new JsonDeserializer<>(RamAlert.class);
+        JacksonJsonDeserializer<RamAlert> jsonDeserializer =
+                new JacksonJsonDeserializer<>(RamAlert.class);
 
         jsonDeserializer.ignoreTypeHeaders();
 
