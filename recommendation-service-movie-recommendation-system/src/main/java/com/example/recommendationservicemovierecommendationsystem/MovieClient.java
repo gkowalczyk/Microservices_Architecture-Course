@@ -1,5 +1,6 @@
 package com.example.recommendationservicemovierecommendationsystem;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
@@ -13,9 +14,10 @@ public class MovieClient {
 
     private final RestClient restClient;
 
-    public MovieClient(@LoadBalanced
-                               RestClient.Builder restClient) {
-        this.restClient = restClient
+    public MovieClient(@Qualifier
+                               ("loadBalancedRestClientBuilder")
+                               RestClient.Builder builder) {
+        this.restClient = builder
                 .baseUrl("http://movie-service-movie-recommendation-system")
                 .build();
     }
