@@ -665,3 +665,69 @@ The key concepts are:
 - Zipkin visualizes timings, service dependencies, errors, and bottlenecks.
 
 
+## 🔐 Module 8 — Microservices Security with Keycloak
+
+### 🔹 Introduction
+
+This module introduces authentication and authorization in a microservice
+system using **Keycloak**, **OAuth 2.0**, and **JWT**. Keycloak issues access
+tokens, while the API Gateway acts as an OAuth 2.0 Resource Server and validates
+tokens before forwarding protected requests.
+
+
+### 🔹 Application architecture
+
+The example extends the movie service with a separate gateway and Keycloak.
+The client requests an access token from Keycloak and sends it to the gateway
+in the `Authorization: Bearer <access_token>` header. The gateway validates the
+JWT before routing the request to `movie-service`.
+
+![Zipkin trace for the movie recommendation system](https://github.com/gkowalczyk/Microservices_Architecture-Course/blob/main/api-gateway-keycloak-training/src/main/resources/img.png?raw=true)
+
+
+Eureka runs separately as the service registry. The gateway discovers the
+movie service through Eureka; requests to Eureka itself do not pass through the
+gateway's JWT security filter.
+
+
+### 🔗 Project repositories
+
+- 👉 [Eureka Server](https://github.com/gkowalczyk/Microservices_Architecture-Course/tree/main/src/main/java/com/example/eurekaserver) — service registration and discovery.
+- 👉 [Keycloak Client Application](https://github.com/gkowalczyk/Microservices_Architecture-Course/tree/main/keycloak-livestream/src/main/java/com/example/keycloaklivestream) — client configuration and authentication with Keycloak.
+- 👉 [Keycloak API Gateway](https://github.com/gkowalczyk/Microservices_Architecture-Course/tree/main/api-gateway-keycloak-training) — gateway security with JWT validation and Client Credentials Flow.
+- 👉 [Movie Service](https://github.com/gkowalczyk/Microservices_Architecture-Course/tree/main/movie-service-movie-recommendation-system/src/main/java/com/example/movieservicemovierecommendationsystem) — movie API accessed through the secured gateway.
+
+### 🔹 Request flow
+
+1. A client obtains an access token from the `ms-realm` realm in Keycloak.
+2. The client calls `GET /api/movies` through the API Gateway with the token.
+3. Spring Security reads the Bearer token and validates the JWT with Keycloak's
+   public keys, including its issuer and expiration.
+4. A request without a valid token is rejected at the gateway.
+5. A valid request is routed to `movie-service`, which returns the movie list.
+
+### 🔹 OAuth 2.0 flows discussed in the module
+
+| Flow | Who obtains the token? | Typical use |
+|---|---|---|
+| Client Credentials | An application or service, acting on its own behalf | Service-to-service calls and automated clients |
+| Password Flow (Direct Access Grant) | A client using a user's login and password | Course demonstration of a user credentials flow |
+
+The `client_credentials` token represents a service account, not an interactive
+user. The Password Flow is included as a learning topic; it requires Direct
+Access Grants to be enabled for the client in Keycloak. For interactive user
+login, Authorization Code with PKCE is the preferred flow.
+
+### 🔹 Security boundary
+
+The gateway's `SecurityWebFilterChain` protects routes reached through the
+gateway. Direct access to the movie service on its own port bypasses this check,
+so deployment should restrict direct access or secure the service separately.
+A valid token proves authentication; route-specific roles or scopes require
+additional authorization rules.
+
+### 🔹 Summary
+
+Module 8 shows how Keycloak issues access tokens and how a Spring Cloud Gateway
+configured as a Resource Server checks JWTs before forwarding requests. It also
+compares a service account token with a token obtained on behalf of a user.
